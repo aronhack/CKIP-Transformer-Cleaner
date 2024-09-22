@@ -1,3 +1,7 @@
+import pandas as pd
+from ckip_transformers.nlp import CkipWordSegmenter, CkipPosTagger, CkipNerChunker
+
+
 def str_remove_emoji(text):
     '''
     Remove emoji from text
@@ -142,3 +146,66 @@ def clean_word_ner(ner):
            .size()
            .reset_index(name='word_count'))
     return ner
+
+
+def run_ckip_transofomer():
+    '''
+    Duplicated and adjusted from official GitHub
+    https://github.com/ckiplab/ckip-transformers/blob/master/example/example.py
+    '''
+
+    # Show version
+    print(__version__)
+
+    # Initialize drivers
+    print("Initializing drivers ... WS")
+    ws_driver = CkipWordSegmenter(model="bert-base")
+    print("Initializing drivers ... POS")
+    pos_driver = CkipPosTagger(model="bert-base")
+    print("Initializing drivers ... NER")
+    ner_driver = CkipNerChunker(model="bert-base")
+    print("Initializing drivers ... done")
+    print()
+
+    # Input text
+    text = [
+        "傅達仁今將執行安樂死，卻突然爆出自己20年前遭緯來體育台封殺，他不懂自己哪裡得罪到電視台。",
+        "美國參議院針對今天總統布什所提名的勞工部長趙小蘭展開認可聽證會，預料她將會很順利通過參議院支持，成為該國有史以來第一位的華裔女性內閣成員。",
+        "空白 也是可以的～",
+    ]
+
+    # Run pipeline
+    print("Running pipeline ... WS")
+    ws = ws_driver(text)
+    print("Running pipeline ... POS")
+    pos = pos_driver(ws)
+    print("Running pipeline ... NER")
+    ner = ner_driver(text)
+    print("Running pipeline ... done")
+    print()
+
+    # Flag each [word, pos, ner]
+    word_pos_li = []
+    word_ner_li = []
+    for sentence_ws, sentence_pos, sentence_ner in zip(ws, pos, ner):
+        # Concatenate word, pos
+        for word_ws, word_pos in zip(sentence_ws, sentence_pos):
+            word_pos_li.append([word_ws, word_pos])
+
+        # Flag ner
+        for entity in sentence_ner:
+            word_ner_li.append([entity.word, entity.ner])
+
+    return word_pos_li, word_ner_li
+
+
+def main():
+    word_pos_li, word_ner_li = run_ckip_transofomer()
+    word_pos = clean_word_pos(word_pos_li)
+    word_ner = clean_word_ner(word_ner_li)
+    print(word_pos)
+    print(word_ner)
+
+
+if __name__ == "__main__":
+    main()
