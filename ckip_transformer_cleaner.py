@@ -101,7 +101,7 @@ def clean_word_pos(word_pos):
     Clean word pos
     '''
     exclude_pos = get_excluded_pos()
-    word_pos = word_pos[['id', 'word', 'pos']]
+    word_pos = word_pos[['word', 'pos']]
     word_pos['word'] = word_pos['word'].str.replace(' ', '')
     # remove zero width joiner
     word_pos['word'] = word_pos['word'].str.replace('\u200d', '')
@@ -117,7 +117,7 @@ def clean_word_pos(word_pos):
                         & (word_pos['word'] != '')
                         ]
     word_pos = (word_pos
-                .groupby(['id', 'word', 'pos'])
+                .groupby(['word', 'pos'])
                 .size()
                 .reset_index(name='word_count'))
 
@@ -128,7 +128,7 @@ def clean_word_ner(ner):
     '''
     Clean word ner
     '''
-    ner = ner[['id', 'word', 'ner']]
+    ner = ner[['word', 'ner']]
     ner['word'] = ner['word'].str.replace(' ', '')
     # remove zero width joiner
     ner['word'] = ner['word'].str.replace('\u200d', '')
@@ -142,7 +142,7 @@ def clean_word_ner(ner):
               & (ner['word'] != '')
               ]
     ner = (ner
-           .groupby(['id', 'word', 'ner'])
+           .groupby(['word', 'ner'])
            .size()
            .reset_index(name='word_count'))
     return ner
