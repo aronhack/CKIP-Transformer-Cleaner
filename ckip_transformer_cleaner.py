@@ -1,19 +1,22 @@
 import pandas as pd
+import re
 from ckip_transformers.nlp import CkipWordSegmenter, CkipPosTagger, CkipNerChunker
 
 
 def str_remove_emoji(text):
     '''
     Remove emoji from text
+    - This function will preserve traditional Chinese characters
     '''
     emoji_pattern = re.compile("["
-                               u"\U0001F600-\U0001F64F"  # emoticons
-                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F000-\U0001F9FF"  # Extended emoticons and symbols
+                               u"\U0001FA00-\U0001FA6F"  # Extended-A
+                               u"\U0001FA70-\U0001FAFF"  # Extended-B
+                               u"\U00002600-\U000027BF"  # Miscellaneous Symbols and Dingbats
                                u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                               u"\U00002702-\U000027B0"
-                               u"\U000024C2-\U0001F251"
+                               u"\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
                                "]+", flags=re.UNICODE)
+
     return emoji_pattern.sub(r'', text)
 
 
